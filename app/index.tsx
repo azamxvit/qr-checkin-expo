@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { QrCode } from "lucide-react-native";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,20 +11,21 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <View style={styles.spacer} />
-
-        <View style={styles.center}>
-          <MyButton
-            title="Scan QR Code"
-            onPress={() => router.push("/scanner")}
-          />
-          <Text style={styles.subtitle}>
-            Welcome! Scan the QR code to check in
-          </Text>
+      <View style={styles.centerContent}>
+        <View style={styles.logoContainer}>
+          <QrCode size={64} color={Colors.primary} strokeWidth={2} />
         </View>
+        <Text style={styles.appName}>QR Tekser</Text>
+      </View>
 
-        <View style={styles.spacer} />
+      <View style={styles.footer}>
+        <MyButton
+          title="Scan QR Code"
+          onPress={() => router.push("/scanner")}
+        />
+        <Text style={styles.subtitle}>
+          Welcome! Scan the QR code to check in
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -34,26 +36,37 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  content: {
+  centerContent: {
     flex: 1,
-    padding: 24,
-    justifyContent: "center",
-  },
-  spacer: {
-    flex: 1,
-  },
-  center: {
-    flex: 2,
     justifyContent: "center",
     alignItems: "center",
-    gap: 20,
+  },
+  logoContainer: {
+    width: 120,
+    height: 120,
+    backgroundColor: "#F0F6FE",
+    borderRadius: 32,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  appName: {
+    fontSize: 32,
+    fontWeight: "800",
+    color: Colors.text,
+    letterSpacing: -0.5,
+    fontFamily: "Arial",
+  },
+  footer: {
+    paddingHorizontal: 24,
+    paddingBottom: 48,
+    width: "100%",
   },
   subtitle: {
     textAlign: "center",
     color: Colors.textSecondary,
-    fontSize: 16,
-    marginTop: 8,
-    lineHeight: 24,
-    maxWidth: "80%",
+    fontSize: 15,
+    marginTop: 16,
+    lineHeight: 22,
   },
 });

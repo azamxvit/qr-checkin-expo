@@ -1,12 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Building2, Mail, Phone, User, X } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MyButton } from "../components/MyButton";
@@ -35,13 +35,16 @@ export default function FormScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+        <TouchableOpacity
+          onPress={() => router.replace("/scanner")}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <X size={28} color={Colors.text} />
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Fill details</Text>
+        <Text style={styles.title}>Form</Text>
 
         <View style={styles.form}>
           <MyInput
@@ -49,6 +52,7 @@ export default function FormScreen() {
             placeholder="Enter your name"
             value={formData.fullName}
             onChangeText={(t) => setFormData({ ...formData, fullName: t })}
+            icon={User}
           />
           <MyInput
             label="Phone Number"
@@ -56,6 +60,7 @@ export default function FormScreen() {
             value={formData.phone}
             keyboardType="phone-pad"
             onChangeText={(t) => setFormData({ ...formData, phone: t })}
+            icon={Phone}
           />
           <MyInput
             label="Email"
@@ -63,6 +68,7 @@ export default function FormScreen() {
             value={formData.email}
             keyboardType="email-address"
             onChangeText={(t) => setFormData({ ...formData, email: t })}
+            icon={Mail}
           />
 
           <MySelect
@@ -71,6 +77,7 @@ export default function FormScreen() {
             value={formData.organization}
             options={ORGANIZATIONS}
             onSelect={(val) => setFormData({ ...formData, organization: val })}
+            icon={Building2}
           />
         </View>
 
@@ -89,7 +96,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 24,
-    paddingTop: 10,
+    paddingTop: 16,
   },
   content: {
     padding: 24,
@@ -101,6 +108,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 32,
     marginTop: 10,
+    fontFamily: "Arial",
   },
   form: {
     flex: 1,

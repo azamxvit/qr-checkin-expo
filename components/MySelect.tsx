@@ -1,12 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
+import { LucideIcon } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    FlatList,
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { CheckinTheme as Colors } from "../constants/theme";
 
@@ -16,6 +17,7 @@ interface Props {
   value: string;
   options: string[];
   onSelect: (value: string) => void;
+  icon?: LucideIcon;
 }
 
 export const MySelect = ({
@@ -24,6 +26,7 @@ export const MySelect = ({
   value,
   options,
   onSelect,
+  icon: Icon,
 }: Props) => {
   const [visible, setVisible] = useState(false);
 
@@ -32,13 +35,27 @@ export const MySelect = ({
       <Text style={styles.label}>{label}</Text>
 
       <TouchableOpacity
-        style={styles.selectButton}
+        style={[
+          styles.selectButton,
+          visible && { borderColor: Colors.primary, backgroundColor: "#FFF" },
+        ]}
         activeOpacity={0.7}
         onPress={() => setVisible(true)}
       >
-        <Text style={[styles.text, !value && styles.placeholder]}>
-          {value || placeholder}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
+          {Icon && (
+            <View style={{ marginRight: 12 }}>
+              <Icon
+                size={20}
+                color={visible ? Colors.primary : Colors.iconDefault}
+              />
+            </View>
+          )}
+          <Text style={[styles.text, !value && styles.placeholder]}>
+            {value || placeholder}
+          </Text>
+        </View>
+
         <Ionicons name="chevron-down" size={20} color="#A0A0A0" />
       </TouchableOpacity>
 
@@ -55,7 +72,6 @@ export const MySelect = ({
         >
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Select {label}</Text>
-
             <FlatList
               data={options}
               keyExtractor={(item) => item}
@@ -88,7 +104,6 @@ export const MySelect = ({
                 </TouchableOpacity>
               )}
             />
-
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setVisible(false)}
@@ -117,7 +132,7 @@ const styles = StyleSheet.create({
   selectButton: {
     height: 56,
     borderWidth: 1.5,
-    borderColor: "#E0E0E0", // Серый в покое
+    borderColor: "#E0E0E0",
     backgroundColor: "#F8F9FA",
     borderRadius: 16,
     paddingHorizontal: 16,
@@ -132,7 +147,6 @@ const styles = StyleSheet.create({
   placeholder: {
     color: "#A0A0A0",
   },
-  // Стили модального окна
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",

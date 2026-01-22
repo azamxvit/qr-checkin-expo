@@ -2,6 +2,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Building2, Mail, Phone, User, X } from "lucide-react-native";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,27 +11,82 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { MyButton } from "../components/MyButton";
 import { MyInput } from "../components/MyInput";
 import { MySelect } from "../components/MySelect";
 import { CheckinTheme as Colors } from "../constants/theme";
 
-const ORGANIZATIONS = ["TCO", "NCOC", "Freedom", "Halyk"];
+import { supabase } from "../lib/supabase";
+import { getDeviceFingerprint } from "../utils/device";
+
+const ORGANIZATIONS_MOCK = [
+  { name: "TCO", id: "org-uuid-001", filial: "Tengiz Base" },
+  { name: "NCOC", id: "org-uuid-002", filial: "Kashagan" },
+  { name: "Freedom", id: "org-uuid-003", filial: "Atyrau Branch" },
+  { name: "Halyk", id: "org-uuid-004", filial: "Central Office" },
+];
 
 export default function FormScreen() {
   const router = useRouter();
-  const { qrData } = useLocalSearchParams();
+  const { qrData } = useLocalSearchParams<{ qrData: string }>();
 
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     phone: "",
     email: "",
-    organization: "",
+    organizationName: "",
   });
 
-  const handleSubmit = () => {
-    console.log("Sending:", { ...formData, qrData });
-    router.replace("/success");
+  const handleSubmit = async () => {
+    if (
+      !formData.fullName ||
+      !formData.phone ||
+      !formData.email ||
+      !formData.organizationName
+    ) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const deviceFingerprint = await getDeviceFingerprint();
+
+      const selectedOrg = ORGANIZATIONS_MOCK.find(
+        (org) => org.name === formData.organizationName,
+      );
+
+      const payload = {
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        organization_id: selectedOrg?.id || "unknown",
+        filial: selectedOrg?.filial || "main",
+        registration_token: qrData || "manual-entry",
+        device_fingerprint: deviceFingerprint,
+        status: "pending",
+      };
+
+      console.log("Sending Payload:", payload);
+
+      const { error } = await supabase
+        .from("pending_employees")
+        .insert([payload]);
+
+      if (error) {
+        throw error;
+      }
+
+      router.replace("/success");
+    } catch (error: any) {
+      console.error("Error submitting form:", error);
+      Alert.alert("Submission Failed", error.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -44,7 +101,7 @@ export default function FormScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Form</Text>
+        <Text style={styles.title}>Fill details</Text>
 
         <View style={styles.form}>
           <MyInput
@@ -74,15 +131,21 @@ export default function FormScreen() {
           <MySelect
             label="Organization"
             placeholder="Select organization"
-            value={formData.organization}
-            options={ORGANIZATIONS}
-            onSelect={(val) => setFormData({ ...formData, organization: val })}
+            value={formData.organizationName}
+            options={ORGANIZATIONS_MOCK.map((o) => o.name)}
+            onSelect={(val) =>
+              setFormData({ ...formData, organizationName: val })
+            }
             icon={Building2}
           />
         </View>
 
         <View style={styles.footer}>
-          <MyButton title="Submit" onPress={handleSubmit} />
+          {loading ? (
+            <ActivityIndicator size="large" color={Colors.primary} />
+          ) : (
+            <MyButton title="Submit" onPress={handleSubmit} />
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -8,8 +8,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from "react-native";
-import { CheckinTheme as Colors } from "../constants/theme";
+import { CheckinTheme as Colors, DarkTheme } from "../../constants/theme";
 
 interface Props {
   label: string;
@@ -30,14 +31,21 @@ export const MySelect = ({
 }: Props) => {
   const [visible, setVisible] = useState(false);
 
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const theme = isDark ? DarkTheme : Colors;
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
 
       <TouchableOpacity
         style={[
           styles.selectButton,
-          visible && { borderColor: Colors.primary, backgroundColor: "#FFF" },
+          {
+            backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+            borderColor: visible ? theme.primary : theme.inputBorder,
+          },
         ]}
         activeOpacity={0.7}
         onPress={() => setVisible(true)}
@@ -47,16 +55,21 @@ export const MySelect = ({
             <View style={{ marginRight: 12 }}>
               <Icon
                 size={20}
-                color={visible ? Colors.primary : Colors.iconDefault}
+                color={visible ? theme.primary : theme.iconDefault || "#A0A0A0"}
               />
             </View>
           )}
-          <Text style={[styles.text, !value && styles.placeholder]}>
+          <Text
+            style={[
+              styles.text,
+              { color: value ? theme.text : theme.textSecondary },
+            ]}
+          >
             {value || placeholder}
           </Text>
         </View>
 
-        <Ionicons name="chevron-down" size={20} color="#A0A0A0" />
+        <Ionicons name="chevron-down" size={20} color={theme.textSecondary} />
       </TouchableOpacity>
 
       <Modal
@@ -66,12 +79,17 @@ export const MySelect = ({
         onRequestClose={() => setVisible(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          style={[styles.modalOverlay, { backgroundColor: theme.overlay }]}
           activeOpacity={1}
           onPress={() => setVisible(false)}
         >
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select {label}</Text>
+          <View
+            style={[styles.modalContent, { backgroundColor: theme.background }]}
+          >
+            <Text style={[styles.modalTitle, { color: theme.text }]}>
+              Select {label}
+            </Text>
+
             <FlatList
               data={options}
               keyExtractor={(item) => item}
@@ -79,7 +97,10 @@ export const MySelect = ({
                 <TouchableOpacity
                   style={[
                     styles.optionItem,
-                    item === value && styles.optionSelected,
+                    { borderBottomColor: theme.inputBorder },
+                    item === value && {
+                      backgroundColor: isDark ? "#2C2C2C" : "#F5F9FF",
+                    },
                   ]}
                   onPress={() => {
                     onSelect(item);
@@ -89,6 +110,7 @@ export const MySelect = ({
                   <Text
                     style={[
                       styles.optionText,
+                      { color: item === value ? theme.primary : theme.text },
                       item === value && styles.optionTextSelected,
                     ]}
                   >
@@ -98,7 +120,7 @@ export const MySelect = ({
                     <Ionicons
                       name="checkmark"
                       size={20}
-                      color={Colors.primary}
+                      color={theme.primary}
                     />
                   )}
                 </TouchableOpacity>
@@ -108,7 +130,11 @@ export const MySelect = ({
               style={styles.closeButton}
               onPress={() => setVisible(false)}
             >
-              <Text style={styles.closeButtonText}>Cancel</Text>
+              <Text
+                style={[styles.closeButtonText, { color: theme.textSecondary }]}
+              >
+                Cancel
+              </Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -125,15 +151,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.text,
     marginBottom: 8,
     marginLeft: 4,
   },
   selectButton: {
     height: 56,
     borderWidth: 1.5,
-    borderColor: "#E0E0E0",
-    backgroundColor: "#F8F9FA",
     borderRadius: 16,
     paddingHorizontal: 16,
     flexDirection: "row",
@@ -142,19 +165,13 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    color: Colors.text,
-  },
-  placeholder: {
-    color: "#A0A0A0",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     padding: 24,
   },
   modalContent: {
-    backgroundColor: "white",
     borderRadius: 24,
     padding: 20,
     maxHeight: "60%",
@@ -169,27 +186,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
     textAlign: "center",
-    color: Colors.text,
   },
   optionItem: {
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-  },
-  optionSelected: {
-    backgroundColor: "#F5F9FF",
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
   optionText: {
     fontSize: 16,
-    color: Colors.text,
   },
   optionTextSelected: {
-    color: Colors.primary,
     fontWeight: "600",
   },
   closeButton: {
@@ -198,7 +208,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButtonText: {
-    color: Colors.textSecondary,
     fontSize: 16,
   },
 });

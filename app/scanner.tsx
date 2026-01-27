@@ -1,7 +1,8 @@
 import { CameraView, useCameraPermissions } from "expo-camera";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Zap, ZapOff } from "lucide-react-native";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -31,6 +32,9 @@ export default function ScannerScreen() {
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
     if (scanned) return;
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
     setScanned(true);
     router.replace({ pathname: "/form", params: { qrData: data } });
   };

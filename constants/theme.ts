@@ -3,7 +3,7 @@ import { Platform } from "react-native";
 const tintColorLight = "#0a7ea4";
 const tintColorDark = "#fff";
 
-const checkinBlue = "#1E88E5";
+const checkinRed = "#dc2626";
 
 export const Colors = {
   light: {
@@ -26,15 +26,27 @@ export const Colors = {
 };
 
 export const CheckinTheme = {
-  primary: checkinBlue,
+  primary: checkinRed,
   background: "#FFFFFF",
   text: "#333333",
   textSecondary: "#666666",
   inputBorder: "#E0E0E0",
   white: "#FFFFFF",
   overlay: "rgba(0,0,0,0.6)",
-  success: checkinBlue,
+  success: "#22C55E",
   iconDefault: "#D1D5DB",
+};
+
+export const DarkTheme = {
+  primary: checkinRed,
+  background: "#121212",
+  text: "#FFFFFF",
+  textSecondary: "#A0A0A0",
+  inputBorder: "#333333",
+  white: "#1E1E1E",
+  overlay: "rgba(0,0,0,0.8)",
+  success: "#4ADE80",
+  iconDefault: "#555555",
 };
 
 export const Fonts = Platform.select({

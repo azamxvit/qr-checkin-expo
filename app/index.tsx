@@ -1,21 +1,41 @@
 import { useRouter } from "expo-router";
 import { QrCode } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+  useColorScheme,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MyButton } from "../components/MyButton";
-import { CheckinTheme as Colors } from "../constants/theme";
+import { MyButton } from "../components/buttons/MyButton";
+import { CheckinTheme as Colors, DarkTheme } from "../constants/theme";
 
 export default function WelcomeScreen() {
   const router = useRouter();
 
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const theme = isDark ? DarkTheme : Colors;
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+
       <View style={styles.centerContent}>
-        <View style={styles.logoContainer}>
+        <View
+          style={[
+            styles.logoContainer,
+            { backgroundColor: isDark ? "#1E1E1E" : "#F3F4F6" },
+          ]}
+        >
           <QrCode size={64} color={Colors.primary} strokeWidth={2} />
         </View>
-        <Text style={styles.appName}>QR Tekser</Text>
+
+        <Text style={[styles.appName, { color: theme.text }]}>KasipQR</Text>
       </View>
 
       <View style={styles.footer}>
@@ -23,7 +43,7 @@ export default function WelcomeScreen() {
           title="Scan QR Code"
           onPress={() => router.push("/scanner")}
         />
-        <Text style={styles.subtitle}>
+        <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
           Welcome! Scan the QR code to check in
         </Text>
       </View>
@@ -34,7 +54,6 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   centerContent: {
     flex: 1,
@@ -44,7 +63,6 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 120,
     height: 120,
-    backgroundColor: "#F0F6FE",
     borderRadius: 32,
     justifyContent: "center",
     alignItems: "center",
@@ -53,7 +71,6 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 32,
     fontWeight: "800",
-    color: Colors.text,
     letterSpacing: -0.5,
     fontFamily: "Arial",
   },
@@ -64,7 +81,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     textAlign: "center",
-    color: Colors.textSecondary,
     fontSize: 15,
     marginTop: 16,
     lineHeight: 22,

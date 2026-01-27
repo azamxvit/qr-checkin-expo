@@ -5,28 +5,50 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  useColorScheme,
 } from "react-native";
-import { CheckinTheme as Colors } from "../constants/theme";
+import MaskInput from "react-native-mask-input";
+import { CheckinTheme as Colors, DarkTheme } from "../../constants/theme";
 
 interface Props {
   label: string;
-  placeholder: string;
   value: string;
-  onChangeText: (text: string) => void;
-  keyboardType?: "default" | "email-address" | "phone-pad";
+  onChangeText: (formatted: string, extracted?: string) => void;
   icon?: LucideIcon;
 }
 
-export const MyInput = ({
+const KZ_PHONE_MASK = [
+  "+",
+  "7",
+  " ",
+  "(",
+  /\d/,
+  /\d/,
+  /\d/,
+  ")",
+  " ",
+  /\d/,
+  /\d/,
+  /\d/,
+  " ",
+  /\d/,
+  /\d/,
+  " ",
+  /\d/,
+  /\d/,
+];
+
+export const PhoneInput = ({
   label,
-  placeholder,
   value,
   onChangeText,
-  keyboardType = "default",
   icon: Icon,
 }: Props) => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const theme = isDark ? DarkTheme : Colors;
+
   const [isFocused, setIsFocused] = useState(false);
   const focusAnim = useRef(new Animated.Value(0)).current;
 
@@ -40,17 +62,12 @@ export const MyInput = ({
 
   const borderColor = focusAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [Colors.inputBorder, Colors.primary],
+    outputRange: [theme.inputBorder, theme.primary],
   });
 
   const backgroundColor = focusAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#F8F9FA", "#FFFFFF"],
-  });
-
-  const webStyle = Platform.select({
-    web: { outlineStyle: "none" } as any,
-    default: {},
+    outputRange: isDark ? ["#121212", "#1E1E1E"] : ["#F8F9FA", "#FFFFFF"],
   });
 
   const iconOpacityGray = focusAnim.interpolate({
@@ -63,9 +80,14 @@ export const MyInput = ({
     outputRange: [0, 1],
   });
 
+  const webStyle = Platform.select({
+    web: { outlineStyle: "none" } as any,
+    default: {},
+  });
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
 
       <Animated.View
         style={[styles.inputContainer, { borderColor, backgroundColor }]}
@@ -73,25 +95,26 @@ export const MyInput = ({
         {Icon && (
           <View style={styles.iconContainer}>
             <Animated.View style={{ opacity: iconOpacityGray }}>
-              <Icon size={20} color={Colors.iconDefault} />
+              <Icon size={20} color={theme.iconDefault || "#A0A0A0"} />
             </Animated.View>
 
             <Animated.View
               style={[styles.iconOverlay, { opacity: iconOpacityBlue }]}
             >
-              <Icon size={20} color={Colors.primary} />
+              <Icon size={20} color={theme.primary} />
             </Animated.View>
           </View>
         )}
 
-        <TextInput
-          style={[styles.input, webStyle]}
-          placeholder={placeholder}
-          placeholderTextColor="#A0A0A0"
+        <MaskInput
+          style={[styles.input, webStyle, { color: theme.text }]}
           value={value}
           onChangeText={onChangeText}
-          keyboardType={keyboardType}
-          selectionColor={Colors.primary}
+          mask={KZ_PHONE_MASK}
+          placeholder="Enter your number"
+          placeholderTextColor={theme.textSecondary}
+          keyboardType="phone-pad"
+          selectionColor={theme.primary}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
@@ -108,7 +131,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.text,
     marginBottom: 8,
     marginLeft: 4,
   },
@@ -135,7 +157,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: Colors.text,
     height: "100%",
     paddingHorizontal: 0,
   },

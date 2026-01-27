@@ -1,26 +1,42 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MyButton } from "../components/MyButton";
-import { CheckinTheme as Colors } from "../constants/theme";
+import { MyButton } from "../components/buttons/MyButton";
+import { SuccessAnimation } from "../components/feedback/SuccessAnimation";
+import { CheckinTheme, DarkTheme } from "../constants/theme";
 
 export default function SuccessScreen() {
   const router = useRouter();
 
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const theme = isDark ? DarkTheme : CheckinTheme;
+
   const handleClose = () => {
-    router.dismissAll();
+    router.replace("/");
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+    >
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+
       <View style={styles.content}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="checkmark" size={60} color={Colors.primary} />
+        <View style={styles.animContainer}>
+          <SuccessAnimation />
         </View>
 
-        <Text style={styles.title}>
+        <Text style={[styles.title, { color: theme.text }]}>Checked In!</Text>
+
+        <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
           Thank you, you have successfully checked in!
         </Text>
       </View>
@@ -35,7 +51,6 @@ export default function SuccessScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
     padding: 24,
   },
   content: {
@@ -43,23 +58,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: "#F0F4F8",
+  animContainer: {
+    marginBottom: 32,
+    height: 150,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 32,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    color: Colors.text,
     textAlign: "center",
-    marginBottom: 12,
-    lineHeight: 34,
+    marginBottom: 8,
+    fontFamily: "Arial",
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: "center",
     maxWidth: "80%",
+    lineHeight: 22,
   },
   footer: {
     marginBottom: 20,

@@ -1,11 +1,11 @@
 import React from "react";
 import {
-    ActivityIndicator,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from "react-native";
-import { CheckinTheme as Colors } from "../constants/theme";
+import { CheckinTheme as Colors } from "../../constants/theme";
 
 interface Props {
   title: string;

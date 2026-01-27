@@ -1,50 +1,70 @@
-# Welcome to your Expo app 👋
+# QR Check-in Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+![Status](https://img.shields.io/badge/status-in%20progress-yellow)
+![Tech](https://img.shields.io/badge/stack-Expo_50_|_React_Native_|_TypeScript_|_Reanimated_3-blue)
 
-## Get started
+A premium mobile application for seamless workplace attendance verification. The app leverages **Expo Router** for navigation, **Reanimated 3** for high-performance animations, and native device capabilities (Camera, Haptics, Geolocation) to provide a fluid user experience.
 
-1. Install dependencies
+## 🚀 Key Features
 
-   ```bash
-   npm install
-   ```
+* **Smart Form Engine**:
+    * **Phone Input**: Telegram-style masking (e.g., `+7 (701) ...`) that auto-formats as you type.
+    * **Email Autocomplete**: Suggests popular domains (`@gmail.com`, etc.) instantly upon typing `@`.
+* **Premium UX/UI**:
+    * **Adaptive Dark Mode**: Fully supported darker interface with "pearl" gray inputs and optimized contrast.
+    * **Skeleton Loading**: Replaced outdated spinners with shimmering skeleton placeholders for a modern feel.
+    * **Haptic Feedback**: Tactile vibrations on successful interactions (QR scan, form submission).
+* **Performance First**:
+    * **Vector Animations**: Custom SVG animations (Success Checkmark) powered by `react-native-reanimated` (0kb bloat compared to Lottie).
+    * **Smooth Transitions**: 60fps layout animations without jank.
+* **Hardware Integration**: Real-time QR scanning and Geolocation verification.
 
-2. Start the app
+## 🛠 Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+* **Core**: React Native, Expo SDK 50, TypeScript
+* **Routing**: Expo Router (File-based routing)
+* **Animations**: React Native Reanimated 3, React Native SVG
+* **UI Components**: Lucide React Native (Icons), Custom Component Architecture
+* **Utils**: Expo Haptics, Expo AV (Sound Design), React Native Mask Input
 
-In the output, you'll find options to open the app in a
+## ⚙️ Getting Started
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1.  **Clone the repository**
+    ```bash
+    git clone [https://github.com/your-username/qr-checkin-expo.git](https://github.com/your-username/qr-checkin-expo.git)
+    cd qr-checkin-expo
+    ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+2.  **Install dependencies**
+    ```bash
+    pnpm install
+    # or npm install
+    ```
 
-## Get a fresh project
+3.  **Start the development server**
+    ```bash
+    npx expo start -c
+    ```
 
-When you're ready, run:
+4.  **Run on Device/Simulator**
+    * Scan the QR code with **Expo Go** (Android/iOS).
+    * Or press `i` for iOS Simulator / `a` for Android Emulator.
 
-```bash
-npm run reset-project
-```
+## 🏗 Architecture & Decisions
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+* **Component-Based Architecture**: The UI is strictly organized into functional directories (`inputs`, `feedback`, `cards`) using **Barrel Exports** (`index.ts`) for clean import statements.
+* **`useCheckIn` Hook**: Encapsulates the entire business logic (form state, validation, API mocking) separate from the View layer.
+* **Dependency Isolation**: Complex logic like input masking and validation is isolated within specific components (`PhoneInput`, `EmailInput`), keeping the main screens clean and readable.
+* **No Heavy Dependencies**: We deliberately avoided heavy libraries like Lottie, implementing animations via Reanimated + SVG to keep the bundle size small and performance high.
 
-## Learn more
+## 🎥 Project Structure
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```text
+src/
+  ├── app/                 # Screens (Expo Router)
+  ├── components/          # Reusable UI
+  │   ├── inputs/          # Smart Inputs (Phone, Email)
+  │   ├── feedback/        # Skeletons, Animations
+  │   └── cards/           # Complex UI Blocks
+  ├── constants/           # Themes, Colors
+  └── hooks/               # Business Logic

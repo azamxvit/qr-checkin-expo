@@ -130,6 +130,8 @@ export const EmailInput = ({
           showsHorizontalScrollIndicator={false}
           style={styles.suggestionsContainer}
           contentContainerStyle={{ paddingRight: 20 }}
+          keyboardShouldPersistTaps="always"
+          nestedScrollEnabled={true}
         >
           {POPULAR_DOMAINS.map((domain) => (
             <TouchableOpacity
@@ -137,18 +139,14 @@ export const EmailInput = ({
               style={[
                 styles.chip,
                 {
-                  backgroundColor: isDark ? "#2C2C2C" : "#E0E7FF",
+                  backgroundColor: isDark ? "#2C2C2C" : "#F3F4F6",
                   borderColor: isDark ? "#444" : "transparent",
                 },
               ]}
               onPress={() => handleSuggestionPress(domain)}
+              activeOpacity={0.7}
             >
-              <Text
-                style={[
-                  styles.chipText,
-                  { color: isDark ? "#FFF" : theme.primary },
-                ]}
-              >
+              <Text style={[styles.chipText, { color: theme.text }]}>
                 @{domain}
               </Text>
             </TouchableOpacity>
@@ -201,8 +199,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   chip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
     borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,

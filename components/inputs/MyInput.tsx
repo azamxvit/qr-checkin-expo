@@ -18,6 +18,7 @@ interface Props {
   onChangeText: (text: string) => void;
   keyboardType?: "default" | "email-address" | "phone-pad";
   icon?: LucideIcon;
+  editable?: boolean;
 }
 
 export const MyInput = ({
@@ -27,6 +28,7 @@ export const MyInput = ({
   onChangeText,
   keyboardType = "default",
   icon: Icon,
+  editable = true,
 }: Props) => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -73,7 +75,10 @@ export const MyInput = ({
       <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
 
       <Animated.View
-        style={[styles.inputContainer, { borderColor, backgroundColor }]}
+        style={[
+          styles.inputContainer,
+          { borderColor, backgroundColor, opacity: editable ? 1 : 0.6 },
+        ]}
       >
         {Icon && (
           <View style={styles.iconContainer}>
@@ -99,6 +104,7 @@ export const MyInput = ({
           selectionColor={theme.primary}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
+          editable={editable}
         />
       </Animated.View>
     </View>

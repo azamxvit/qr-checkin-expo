@@ -12,6 +12,7 @@ interface Props {
   onPress: () => void;
   variant?: "primary" | "outline";
   loading?: boolean;
+  disabled?: boolean;
 }
 
 export const MyButton = ({
@@ -19,16 +20,18 @@ export const MyButton = ({
   onPress,
   variant = "primary",
   loading = false,
+  disabled = false,
 }: Props) => {
   return (
     <TouchableOpacity
       style={[
         styles.container,
         variant === "outline" && styles.outlineContainer,
+        (disabled || loading) && { opacity: 0.5 },
       ]}
       onPress={onPress}
+      disabled={disabled || loading}
       activeOpacity={0.8}
-      disabled={loading}
     >
       {loading ? (
         <ActivityIndicator color={Colors.white} />

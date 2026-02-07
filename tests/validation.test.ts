@@ -1,4 +1,4 @@
-import { isValidEmail, sanitizePhone } from "./validation";
+import { isValidEmail, sanitizePhone } from "../utils/validation";
 
 describe("Validation Utils", () => {
   describe("isValidEmail", () => {

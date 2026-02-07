@@ -1,4 +1,4 @@
-import { MyButton } from "@/components/buttons";
+import { MyButton } from "@/components/buttons/MyButton";
 import { useRouter } from "expo-router";
 import { ArrowLeft, Building2, Phone, User } from "lucide-react-native";
 import React from "react";
@@ -15,7 +15,6 @@ import { LockedOrganizationCard } from "../components/cards/LockedOrganizationCa
 import { FormSkeletonLoader } from "../components/feedback/FormSkeletonLoader";
 import { EmailInput } from "../components/inputs/EmailInput";
 import { MyInput } from "../components/inputs/MyInput";
-import { MySelect } from "../components/inputs/MySelect";
 import { PhoneInput } from "../components/inputs/PhoneInput";
 
 import { CheckinTheme as Colors, DarkTheme } from "../constants/theme";
@@ -26,15 +25,8 @@ export default function FormScreen() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? DarkTheme : Colors;
 
-  const {
-    formData,
-    setFormData,
-    loading,
-    isOrgLocked,
-    handleUnlockOrg,
-    submitForm,
-    ORGANIZATIONS_MOCK,
-  } = useCheckIn();
+  const { formData, setFormData, loading, submitForm, isOrgLocked } =
+    useCheckIn();
 
   return (
     <SafeAreaView
@@ -49,7 +41,10 @@ export default function FormScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
         <Text style={[styles.title, { color: theme.text }]}>Form</Text>
 
         <View style={styles.form}>
@@ -76,22 +71,30 @@ export default function FormScreen() {
             value={formData.email}
             onChangeText={(t) => setFormData({ ...formData, email: t })}
           />
+
           {isOrgLocked ? (
             <LockedOrganizationCard
               organizationName={formData.organizationName}
-              onUnlock={handleUnlockOrg}
             />
           ) : (
-            <MySelect
-              label="Organization"
-              placeholder="Select organization"
-              value={formData.organizationName}
-              options={ORGANIZATIONS_MOCK.map((o) => o.name)}
-              onSelect={(val) =>
-                setFormData({ ...formData, organizationName: val })
-              }
-              icon={Building2}
-            />
+            <>
+              <MyInput
+                label="Organization"
+                placeholder="Scan QR code to get organization"
+                value={formData.organizationName}
+                icon={Building2}
+                editable={false}
+              />
+              <Text
+                style={{
+                  color: theme.textSecondary,
+                  fontSize: 12,
+                  marginTop: 4,
+                }}
+              >
+                * Organization is required. Please scan the QR code.
+              </Text>
+            </>
           )}
 
           <View style={{ height: 10 }} />
@@ -101,7 +104,11 @@ export default function FormScreen() {
           {loading ? (
             <FormSkeletonLoader />
           ) : (
-            <MyButton title="Submit" onPress={submitForm} />
+            <MyButton
+              title="Submit"
+              onPress={submitForm}
+              disabled={!isOrgLocked}
+            />
           )}
         </View>
       </ScrollView>

@@ -1,66 +1,55 @@
-import { Building2, CheckCircle2, Edit2 } from "lucide-react-native";
+import { Building2, CheckCircle } from "lucide-react-native";
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  useColorScheme,
-} from "react-native";
-import { CheckinTheme as Colors, DarkTheme } from "../../constants/theme";
+import { StyleSheet, Text, View, useColorScheme } from "react-native";
+import { CheckinTheme, DarkTheme } from "../../constants/theme";
 
-interface Props {
+interface LockedOrganizationCardProps {
   organizationName: string;
-  onUnlock: () => void;
+  label?: string;
 }
 
 export const LockedOrganizationCard = ({
   organizationName,
-  onUnlock,
-}: Props) => {
+  label = "Organization",
+}: LockedOrganizationCardProps) => {
   const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? DarkTheme : CheckinTheme;
   const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : Colors;
 
   return (
     <View style={styles.wrapper}>
-      <Text style={[styles.label, { color: theme.text }]}>Organization</Text>
+      <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
 
       <View
         style={[
           styles.container,
           {
-            borderColor: theme.success,
-            backgroundColor: isDark ? "#1a2e1a" : "#F0FDF4",
+            backgroundColor: isDark ? "rgba(22, 163, 74, 0.15)" : "#F0FDF4",
+            borderColor: isDark ? "#166534" : "#BBF7D0",
           },
         ]}
       >
-        <View style={styles.header}>
-          <View style={styles.row}>
-            <Building2
-              size={20}
-              color={theme.success}
-              style={{ marginRight: 10 }}
-            />
-            <Text style={[styles.orgName, { color: theme.text }]}>
-              {organizationName}
-            </Text>
-          </View>
-
-          <TouchableOpacity onPress={onUnlock} style={styles.editButton}>
-            <Edit2 size={16} color={theme.textSecondary} />
-          </TouchableOpacity>
+        <View style={styles.iconContainer}>
+          <Building2 size={24} color={isDark ? "#4ADE80" : "#16A34A"} />
         </View>
 
-        <View style={styles.row}>
-          <CheckCircle2
-            size={12}
-            color={theme.success}
-            style={{ marginRight: 4 }}
-          />
-          <Text style={[styles.badgeText, { color: theme.success }]}>
-            Организация определена QR-кодом
+        <View style={styles.textContainer}>
+          <Text
+            style={[styles.orgName, { color: isDark ? "#E5E7EB" : "#111827" }]}
+          >
+            {organizationName}
           </Text>
+          <View style={styles.badge}>
+            <CheckCircle size={12} color={isDark ? "#4ADE80" : "#16A34A"} />
+            <Text
+              style={[
+                styles.badgeText,
+                { color: isDark ? "#4ADE80" : "#16A34A" },
+              ]}
+            >
+              Organization verified by QR
+            </Text>
+          </View>
         </View>
       </View>
     </View>
@@ -69,36 +58,38 @@ export const LockedOrganizationCard = ({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginBottom: 20,
-    width: "100%",
+    marginBottom: 24,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 8,
     marginLeft: 4,
+    fontFamily: "Arial",
   },
   container: {
-    borderWidth: 1.5,
-    borderRadius: 16,
+    flexDirection: "row",
+    alignItems: "center",
     padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+  iconContainer: {
+    marginRight: 16,
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
+  textContainer: {
+    flex: 1,
   },
   orgName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
+    marginBottom: 4,
+    fontFamily: "Arial",
   },
-  editButton: {
-    padding: 8,
+  badge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
   },
   badgeText: {
     fontSize: 12,

@@ -85,6 +85,9 @@ export const PhoneInput = ({
     default: {},
   });
 
+  const hasValue = value && value.length > 0;
+  const activeMask = isFocused || hasValue ? KZ_PHONE_MASK : undefined;
+
   return (
     <View style={styles.container}>
       <Text style={[styles.label, { color: theme.text }]}>{label}</Text>
@@ -108,9 +111,9 @@ export const PhoneInput = ({
 
         <MaskInput
           style={[styles.input, webStyle, { color: theme.text }]}
-          value={value}
+          value={value || ""}
           onChangeText={onChangeText}
-          mask={KZ_PHONE_MASK}
+          mask={activeMask}
           placeholder="Enter your number"
           placeholderTextColor={theme.textSecondary}
           keyboardType="phone-pad"

@@ -1,6 +1,5 @@
-import { MyButton } from "@/components/buttons/MyButton";
-import { useRouter } from "expo-router";
-import { ArrowLeft, Building2, Phone, User } from "lucide-react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ArrowLeft, Phone, User } from "lucide-react-native"; // Добавил иконку Phone
 import React from "react";
 import {
   ScrollView,
@@ -11,12 +10,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { MyButton } from "../components/buttons/MyButton";
 import { LockedOrganizationCard } from "../components/cards/LockedOrganizationCard";
 import { FormSkeletonLoader } from "../components/feedback/FormSkeletonLoader";
 import { EmailInput } from "../components/inputs/EmailInput";
 import { MyInput } from "../components/inputs/MyInput";
 import { PhoneInput } from "../components/inputs/PhoneInput";
-
 import { CheckinTheme as Colors, DarkTheme } from "../constants/theme";
 import { useCheckIn } from "../hooks/useCheckIn";
 
@@ -25,8 +25,18 @@ export default function FormScreen() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === "dark" ? DarkTheme : Colors;
 
+  const params = useLocalSearchParams();
+
+  const { token, office_point_id } = params as unknown as {
+    token: string;
+    office_point_id: string;
+  };
+
   const { formData, setFormData, loading, submitForm, isOrgLocked } =
-    useCheckIn();
+    useCheckIn({
+      token,
+      officePointId: office_point_id,
+    });
 
   return (
     <SafeAreaView
@@ -56,12 +66,12 @@ export default function FormScreen() {
             icon={User}
           />
 
+          {/* 👇 ИСПОЛЬЗУЕМ PhoneInput ВМЕСТО MyInput */}
+          {/* Убираем placeholder, так как он зашит внутри PhoneInput */}
           <PhoneInput
             label="Phone Number"
             value={formData.phone}
-            onChangeText={(formatted) =>
-              setFormData({ ...formData, phone: formatted })
-            }
+            onChangeText={(t) => setFormData({ ...formData, phone: t })}
             icon={Phone}
           />
 
@@ -74,27 +84,16 @@ export default function FormScreen() {
 
           {isOrgLocked ? (
             <LockedOrganizationCard
-              organizationName={formData.organizationName}
+              organizationName={formData.organizationName || "Verified Point"}
             />
           ) : (
-            <>
-              <MyInput
-                label="Organization"
-                placeholder="Scan QR code to get organization"
-                value={formData.organizationName}
-                icon={Building2}
-                editable={false}
-              />
+            <View>
               <Text
-                style={{
-                  color: theme.textSecondary,
-                  fontSize: 12,
-                  marginTop: 4,
-                }}
+                style={{ color: "red", textAlign: "center", marginTop: 10 }}
               >
-                * Organization is required. Please scan the QR code.
+                Ошибка: QR-код не содержит ID точки (office_point_id)
               </Text>
-            </>
+            </View>
           )}
 
           <View style={{ height: 10 }} />
@@ -137,6 +136,7 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
+    gap: 16,
   },
   footer: {
     marginTop: 20,

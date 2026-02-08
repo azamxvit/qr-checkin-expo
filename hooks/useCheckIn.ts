@@ -1,76 +1,59 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import { Alert } from "react-native";
 import { CheckInService } from "../services/checkInService";
-import { CheckInFormData, QrPayload } from "../types/checkIn";
+import { CheckInFormData } from "../types/checkIn";
 
-export const useCheckIn = () => {
+interface UseCheckInProps {
+  token?: string;
+  officePointId?: string;
+}
+
+export const useCheckIn = ({ token, officePointId }: UseCheckInProps) => {
   const router = useRouter();
-  const { qrData } = useLocalSearchParams<{ qrData: string }>();
-
   const [loading, setLoading] = useState(false);
-  const [isOrgLocked, setIsOrgLocked] = useState(false);
-  const [qrPayload, setQrPayload] = useState<QrPayload | null>(null);
+
+  const isLocked = !!officePointId && !!token;
 
   const [formData, setFormData] = useState<CheckInFormData>({
     fullName: "",
     phone: "",
     email: "",
-    organizationName: "",
+    organizationName: isLocked ? "Verified Point" : "",
   });
 
-  // 1. Логика парсинга QR (отделена от бизнес-логики)
-  useEffect(() => {
-    if (qrData) {
-      try {
-        const parsed: QrPayload = JSON.parse(qrData);
-
-        if (parsed.organization) {
-          setFormData((prev) => ({
-            ...prev,
-            organizationName: parsed.organization,
-          }));
-          setQrPayload(parsed);
-          setIsOrgLocked(true);
-        }
-      } catch (e) {
-        console.error("QR Parse Error:", e);
-        Alert.alert("Error", "Invalid QR Data received");
-      }
+  const validateForm = () => {
+    if (!formData.fullName.trim()) {
+      Alert.alert("Ошибка", "Введите имя");
+      return false;
     }
-  }, [qrData]);
-
-  const handleUnlockOrg = () => {
-    setIsOrgLocked(false);
-    setQrPayload(null);
-    setFormData((prev) => ({ ...prev, organizationName: "" }));
+    if (!formData.phone.trim()) {
+      Alert.alert("Ошибка", "Введите телефон");
+      return false;
+    }
+    if (!token || !officePointId) {
+      Alert.alert("Ошибка", "Данные QR-кода потеряны. Отсканируйте заново.");
+      return false;
+    }
+    return true;
   };
 
-  // 2. Сабмит формы вызывает Сервис
   const submitForm = async () => {
-    // Валидация (можно тоже вынести, но пока ок здесь)
-    if (
-      !formData.fullName ||
-      !formData.phone ||
-      !formData.email ||
-      !formData.organizationName
-    ) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
-
     try {
-      // 👇 Вся грязная работа ушла в сервис
       await CheckInService.performCheckIn({
         formData,
-        qrPayload,
+        token: token!,
+        office_point_id: officePointId!,
       });
 
-      router.replace("/success");
+      Alert.alert("Успех", "Вы успешно зарегистрировались!", [
+        { text: "OK", onPress: () => router.replace("/") },
+      ]);
     } catch (error: any) {
-      Alert.alert("Check-in Failed", error.message);
+      Alert.alert("Ошибка", error.message || "Не удалось отправить данные");
     } finally {
       setLoading(false);
     }
@@ -80,8 +63,7 @@ export const useCheckIn = () => {
     formData,
     setFormData,
     loading,
-    isOrgLocked,
-    handleUnlockOrg,
     submitForm,
+    isOrgLocked: isLocked,
   };
 };

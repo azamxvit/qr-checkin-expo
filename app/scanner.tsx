@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { ArrowLeft, Zap, ZapOff } from "lucide-react-native";
 import { useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   StatusBar,
@@ -19,6 +20,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScannerOverlay } from "../components/feedback/ScannerOverlay";
 import { CheckinTheme as Colors } from "../constants/theme";
+import { QrService } from "../services/qrService";
 
 const { width, height } = Dimensions.get("window");
 const SCAN_SIZE = 280;
@@ -29,6 +31,7 @@ export default function ScannerScreen() {
 
   const [scanned, setScanned] = useState(false);
   const [flash, setFlash] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (!permission) return <View style={{ flex: 1, backgroundColor: "#000" }} />;
   if (!permission.granted) {
@@ -44,19 +47,15 @@ export default function ScannerScreen() {
     );
   }
 
-  // функция которая чекает попал ли qr в камеру
   const isQrInBounds = (bounds: any) => {
     if (!bounds) return true;
-
     const qrCenterX = bounds.origin.x + bounds.size.width / 2;
     const qrCenterY = bounds.origin.y + bounds.size.height / 2;
-
     const scanAreaMinX = (width - SCAN_SIZE) / 2;
     const scanAreaMaxX = scanAreaMinX + SCAN_SIZE;
     const scanAreaMinY = (height - SCAN_SIZE) / 2;
     const scanAreaMaxY = scanAreaMinY + SCAN_SIZE;
 
-    // проверяет находится qr по центру
     return (
       qrCenterX > scanAreaMinX - 20 &&
       qrCenterX < scanAreaMaxX + 20 &&
@@ -65,37 +64,51 @@ export default function ScannerScreen() {
     );
   };
 
-  const handleBarCodeScanned = (scanningResult: BarcodeScanningResult) => {
+  const handleBarCodeScanned = async (
+    scanningResult: BarcodeScanningResult,
+  ) => {
     const { data, bounds } = scanningResult;
 
-    if (scanned) return;
+    if (scanned || isProcessing) return;
 
-    if (!isQrInBounds(bounds)) {
-      // Можно раскомментировать для отладки, чтобы видеть координаты
-      // console.log("QR ignored (out of bounds)");
-      return;
-    }
+    if (!isQrInBounds(bounds)) return;
 
     setScanned(true);
+    setIsProcessing(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     try {
-      const parsedData = JSON.parse(data);
-
-      if (
-        parsedData.type === "employee_registration" ||
-        parsedData.type === "office_check"
-      ) {
-        router.replace({
-          pathname: "/form",
-          params: { qrData: data },
-        });
-      } else {
-        throw new Error("Неверный тип QR-кода");
+      let tokenToCheck = data;
+      try {
+        const parsedData = JSON.parse(data);
+        tokenToCheck =
+          parsedData.token || parsedData.registration_token || data;
+      } catch (e) {
+        tokenToCheck = data;
       }
-    } catch (e) {
-      Alert.alert("Ошибка", "QR-код не распознан или находится вне зоны.", [
-        { text: "OK", onPress: () => setScanned(false) },
+
+      // Валидация через сервис
+      const validData = await QrService.validateQrToken(tokenToCheck);
+
+      // Переход на форму БЕЗ organizationName
+      router.replace({
+        pathname: "/form",
+        params: {
+          token: validData.token,
+          office_point_id: validData.office_point_id,
+        },
+      });
+    } catch (error: any) {
+      console.error("QR Error:", error);
+
+      Alert.alert("Ошибка QR-кода", error.message || "Невалидный код", [
+        {
+          text: "OK",
+          onPress: () => {
+            setScanned(false);
+            setIsProcessing(false);
+          },
+        },
       ]);
     }
   };
@@ -111,11 +124,19 @@ export default function ScannerScreen() {
       >
         <ScannerOverlay />
 
+        {isProcessing && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+            <Text style={styles.loadingText}>Checking...</Text>
+          </View>
+        )}
+
         <SafeAreaView style={styles.controlsLayer} pointerEvents="box-none">
           <View style={styles.header}>
             <TouchableOpacity
               onPress={() => router.back()}
               style={styles.iconButton}
+              disabled={isProcessing}
             >
               <ArrowLeft size={24} color="white" />
             </TouchableOpacity>
@@ -172,5 +193,18 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 30,
+  },
+  loadingText: {
+    color: "white",
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

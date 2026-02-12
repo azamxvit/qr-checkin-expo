@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { QrCode } from "lucide-react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -9,15 +9,21 @@ import {
   useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MyButton } from "../components/buttons/MyButton";
-import { CheckinTheme as Colors, DarkTheme } from "../constants/theme";
+import { CheckinTheme, DarkTheme } from "../constants/theme";
 
-export default function WelcomeScreen() {
+export default function SplashScreen() {
   const router = useRouter();
-
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : Colors;
+  const theme = isDark ? DarkTheme : CheckinTheme;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.replace("/(tabs)/profile");
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <SafeAreaView
@@ -32,20 +38,11 @@ export default function WelcomeScreen() {
             { backgroundColor: isDark ? "#1E1E1E" : "#F3F4F6" },
           ]}
         >
-          <QrCode size={64} color={Colors.primary} strokeWidth={2} />
+          {/* Логотип красным цветом */}
+          <QrCode size={80} color={CheckinTheme.primary} strokeWidth={2.5} />
         </View>
 
         <Text style={[styles.appName, { color: theme.text }]}>KasipQR</Text>
-      </View>
-
-      <View style={styles.footer}>
-        <MyButton
-          title="Scan QR Code"
-          onPress={() => router.push("/scanner")}
-        />
-        <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Welcome! Scan the QR code to check in
-        </Text>
       </View>
     </SafeAreaView>
   );
@@ -54,35 +51,30 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  centerContent: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
+  centerContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   logoContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 32,
+    width: 140,
+    height: 140,
+    borderRadius: 40,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   appName: {
-    fontSize: 32,
+    fontSize: 36,
     fontWeight: "800",
     letterSpacing: -0.5,
-    fontFamily: "Arial",
-  },
-  footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 48,
-    width: "100%",
-  },
-  subtitle: {
-    textAlign: "center",
-    fontSize: 15,
-    marginTop: 16,
-    lineHeight: 22,
+    fontFamily: "System",
   },
 });

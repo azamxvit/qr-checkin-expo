@@ -71,7 +71,7 @@ export default function ScannerScreen() {
 
     if (scanned || isProcessing) return;
 
-    if (!isQrInBounds(bounds)) return;
+    // if (!isQrInBounds(bounds)) return;
 
     setScanned(true);
     setIsProcessing(true);
@@ -86,11 +86,8 @@ export default function ScannerScreen() {
       } catch (e) {
         tokenToCheck = data;
       }
-
-      // Валидация через сервис
       const validData = await QrService.validateQrToken(tokenToCheck);
 
-      // Переход на форму БЕЗ organizationName
       router.replace({
         pathname: "/form",
         params: {

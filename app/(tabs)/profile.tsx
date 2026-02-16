@@ -1,64 +1,82 @@
+import { useRouter } from "expo-router";
 import { CircleHelp, ShieldCheck, User as UserIcon } from "lucide-react-native";
 import React from "react";
-import { ScrollView, StyleSheet, View, useColorScheme } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ProfileHeader } from "../../components/profile/ProfileHeader";
-import { ProfileMenuItem } from "../../components/profile/ProfileMenuItem";
-import { CheckinTheme, DarkTheme } from "../../constants/theme";
-
-const ColoredIcon = ({
-  icon: Icon,
-  color,
-}: {
-  icon: React.ElementType;
-  color: string;
-}) => (
-  <View style={[styles.iconContainer, { backgroundColor: color }]}>
-    <Icon size={18} color="#FFFFFF" strokeWidth={2.5} />
-  </View>
-);
+import { ColoredIcon } from "../../components/ui/ColoredIcon";
+import { MenuItem } from "../../components/ui/MenuItem";
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 export default function ProfileScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : CheckinTheme;
+  const router = useRouter();
+  const { theme } = useAppTheme();
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.background }]}
     >
-      <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 }]}
-        showsVerticalScrollIndicator={false}
+      <Animated.View
+        style={{ flex: 1 }}
+        entering={FadeInDown.duration(300).springify()}
       >
-        {/* Header Component */}
-        <ProfileHeader name="Azamat" role="Barista" theme={theme} />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <ProfileHeader name="Azamat" role="Barista" theme={theme} />
 
-        {/* Menu Items Group */}
-        <View style={styles.section}>
-          <ProfileMenuItem
-            icon={<ColoredIcon icon={UserIcon} color="#FF3B30" />}
-            label="Personal Information"
-            theme={theme}
-          />
-          <ProfileMenuItem
-            icon={<ColoredIcon icon={ShieldCheck} color="#22C55E" />}
-            label="Security & Privacy"
-            theme={theme}
-          />
-        </View>
+          <View
+            style={[
+              styles.section,
+              { backgroundColor: theme.card, borderColor: theme.inputBorder },
+            ]}
+          >
+            <MenuItem
+              theme={theme}
+              label="Personal Information"
+              icon={
+                <ColoredIcon icon={UserIcon} color={theme.colors.iconBlue} />
+              }
+              onPress={() => router.push("/profile-details/personal")}
+            />
+            <MenuItem
+              theme={theme}
+              label="Security & Privacy"
+              icon={
+                <ColoredIcon
+                  icon={ShieldCheck}
+                  color={theme.colors.iconGreen}
+                />
+              }
+              onPress={() => router.push("/profile-details/security")}
+            />
+          </View>
 
-        <View style={styles.section}>
-          <ProfileMenuItem
-            icon={<ColoredIcon icon={CircleHelp} color="#FF9500" />}
-            label="Help & Support"
-            theme={theme}
-          />
-        </View>
+          <View
+            style={[
+              styles.section,
+              { backgroundColor: theme.card, borderColor: theme.inputBorder },
+            ]}
+          >
+            <MenuItem
+              theme={theme}
+              label="Help & Support"
+              icon={
+                <ColoredIcon
+                  icon={CircleHelp}
+                  color={theme.colors.iconOrange}
+                />
+              }
+              onPress={() => router.push("/profile-details/support")}
+            />
+          </View>
 
-        <View style={{ height: 80 }} />
-      </ScrollView>
+          <View style={{ height: 100 }} />
+        </ScrollView>
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -73,12 +91,8 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 24,
-  },
-  iconContainer: {
-    width: 28,
-    height: 28,
-    borderRadius: 7,
-    alignItems: "center",
-    justifyContent: "center",
+    borderRadius: 12,
+    overflow: "hidden",
+    borderWidth: 1,
   },
 });

@@ -51,7 +51,7 @@ export const SuccessAnimation = () => {
           cx="50"
           cy="50"
           r="45"
-          stroke={Colors.success || "#22C55E"}
+          stroke={Colors.colors.iconGreen || "#22C55E"}
           strokeWidth="5"
           fill="transparent"
           strokeDasharray={CIRCLE_LENGTH}
@@ -63,7 +63,7 @@ export const SuccessAnimation = () => {
 
         <AnimatedPath
           d="M28 50 L45 68 L75 35"
-          stroke={Colors.success || "#22C55E"}
+          stroke={Colors.colors.iconGreen || "#22C55E"}
           strokeWidth="6"
           fill="transparent"
           strokeDasharray={CHECK_LENGTH}

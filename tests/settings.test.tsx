@@ -10,6 +10,15 @@ jest.mock("expo-router", () => ({
   }),
 }));
 
+const mockSetThemeMode = jest.fn();
+jest.mock("../context/ThemeContext", () => ({
+  useThemeContext: () => ({
+    themeMode: "system",
+    resolvedColorScheme: "light",
+    setThemeMode: mockSetThemeMode,
+  }),
+}));
+
 const mockSignOut = jest.fn(() => Promise.resolve({ error: null }));
 jest.mock("../services/supabase", () => ({
   supabase: {
@@ -35,6 +44,12 @@ describe("SettingsScreen", () => {
     expect(getByText("Notifications")).toBeTruthy();
   });
 
+  it("отображает текущий режим темы", () => {
+    const { getByText } = render(<SettingsScreen />);
+
+    expect(getByText("Automatic")).toBeTruthy();
+  });
+
   it("меняет состояние свитча уведомлений", () => {
     const { getByRole } = render(<SettingsScreen />);
 
@@ -52,7 +67,7 @@ describe("SettingsScreen", () => {
 
     expect(Alert.alert).toHaveBeenCalledWith(
       "Log Out",
-      "Are you sure?",
+      "Are you sure you want to log out?",
       expect.any(Array),
     );
   });

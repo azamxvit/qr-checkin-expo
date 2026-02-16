@@ -9,9 +9,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from "react-native";
-import { CheckinTheme as Colors, DarkTheme } from "../../constants/theme";
+import { useAppTheme } from "../../hooks/useAppTheme";
 import { isValidEmail } from "../../utils/validation";
 
 interface Props {
@@ -35,16 +34,11 @@ export const EmailInput = ({
   value,
   onChangeText,
 }: Props) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : Colors;
+  const { theme, isDark } = useAppTheme();
 
   const [isFocused, setIsFocused] = useState(false);
-
   const isValid = isValidEmail(value);
-
   const showSuggestions = value.includes("@") && !isValid;
-
   const focusAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -94,11 +88,11 @@ export const EmailInput = ({
       >
         <View style={styles.iconContainer}>
           {isValid ? (
-            <Check size={20} color={theme.success || "#22C55E"} />
+            <Check size={20} color={theme.colors.iconGreen} />
           ) : (
             <>
               <Animated.View style={{ opacity: iconOpacityGray }}>
-                <Mail size={20} color={theme.iconDefault || "#A0A0A0"} />
+                <Mail size={20} color={theme.colors?.iconGray || "#A0A0A0"} />
               </Animated.View>
               <Animated.View
                 style={[styles.iconOverlay, { opacity: iconOpacityBlue }]}

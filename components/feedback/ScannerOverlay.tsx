@@ -8,12 +8,13 @@ import Animated, {
   withSequence,
   withTiming,
 } from "react-native-reanimated";
-import { CheckinTheme } from "../../constants/theme";
+import { useAppTheme } from "../../hooks/useAppTheme"; // ✅
 
 const { width } = Dimensions.get("window");
 const SCAN_SIZE = width * 0.7;
 
 export const ScannerOverlay = () => {
+  const { theme } = useAppTheme(); // ✅ Берем тему
   const translateY = useSharedValue(0);
 
   useEffect(() => {
@@ -29,49 +30,66 @@ export const ScannerOverlay = () => {
 
   const animatedLineStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    // Передаем цвет через style, так как это анимированное значение
   }));
 
   return (
     <View style={styles.overlay}>
-      {/* Верхнее затемнение */}
       <View style={styles.topOverlay}>
         <Text style={styles.instructionText}>Scan QR Code to Check In</Text>
       </View>
 
       <View style={styles.middleContainer}>
-        {/* Левое затемнение */}
         <View style={styles.sideOverlay} />
-
-        {/* Прозрачное окно сканирования */}
         <View style={styles.scanWindow}>
-          {/* Декоративные уголки */}
-          <View style={[styles.corner, styles.topLeft]} />
-          <View style={[styles.corner, styles.topRight]} />
-          <View style={[styles.corner, styles.bottomLeft]} />
-          <View style={[styles.corner, styles.bottomRight]} />
+          <View
+            style={[
+              styles.corner,
+              styles.topLeft,
+              { borderColor: theme.primary },
+            ]}
+          />
+          <View
+            style={[
+              styles.corner,
+              styles.topRight,
+              { borderColor: theme.primary },
+            ]}
+          />
+          <View
+            style={[
+              styles.corner,
+              styles.bottomLeft,
+              { borderColor: theme.primary },
+            ]}
+          />
+          <View
+            style={[
+              styles.corner,
+              styles.bottomRight,
+              { borderColor: theme.primary },
+            ]}
+          />
 
-          {/* Анимированный лазер */}
-          <Animated.View style={[styles.scanLine, animatedLineStyle]} />
+          <Animated.View
+            style={[
+              styles.scanLine,
+              animatedLineStyle,
+              { backgroundColor: theme.primary, shadowColor: theme.primary },
+            ]}
+          />
         </View>
-
-        {/* Правое затемнение */}
         <View style={styles.sideOverlay} />
       </View>
-
-      {/* Нижнее затемнение */}
       <View style={styles.bottomOverlay} />
     </View>
   );
 };
 
 const overlayColor = "rgba(0,0,0,0.6)";
-const borderColor = CheckinTheme.primary;
 
 const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 10,
-  },
+  overlay: { ...StyleSheet.absoluteFillObject, zIndex: 10 },
   topOverlay: {
     flex: 1,
     backgroundColor: overlayColor,
@@ -107,8 +125,6 @@ const styles = StyleSheet.create({
   scanLine: {
     width: "100%",
     height: 3,
-    backgroundColor: borderColor,
-    shadowColor: borderColor,
     shadowOpacity: 0.8,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 0 },
@@ -118,7 +134,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 25,
     height: 25,
-    borderColor: borderColor,
     borderWidth: 4,
     borderRadius: 4,
   },

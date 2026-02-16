@@ -1,10 +1,12 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useColorScheme } from "react-native";
+import React from "react";
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+import { ThemeProvider } from "../context/ThemeContext";
+import { useAppTheme } from "../hooks/useAppTheme";
+
+function RootNavigator() {
+  const { isDark } = useAppTheme();
 
   return (
     <>
@@ -12,50 +14,27 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          animation: "fade",
+          animation: "slide_from_right",
+          gestureEnabled: true,
+          gestureDirection: "horizontal",
         }}
       >
-        {/* Стартовый экран */}
         <Stack.Screen name="index" options={{ headerShown: false }} />
 
-        {/* Главный экран с табами */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-        {/* Модальное окно сканера */}
-        <Stack.Screen
-          name="scanner"
-          options={{
-            presentation: "modal",
-            headerShown: false,
-            animation: "slide_from_bottom",
-          }}
-        />
+        <Stack.Screen name="profile-details" options={{ headerShown: false }} />
 
-        {/* Форма и экран успеха */}
-        <Stack.Screen
-          name="form"
-          options={{
-            headerShown: false,
-            animation: "slide_from_right",
-          }}
-        />
-        <Stack.Screen
-          name="success"
-          options={{
-            headerShown: false,
-            animation: "fade",
-          }}
-        />
-
-        {/* Модалка */}
-        <Stack.Screen
-          name="modal"
-          options={{
-            presentation: "modal",
-            headerShown: false,
-          }}
-        />
+        <Stack.Screen name="qr-form" options={{ headerShown: false }} />
       </Stack>
     </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <RootNavigator />
+    </ThemeProvider>
   );
 }

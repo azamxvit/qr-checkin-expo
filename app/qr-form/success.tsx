@@ -1,26 +1,18 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MyButton } from "../components/buttons/MyButton";
-import { SuccessAnimation } from "../components/feedback/SuccessAnimation";
-import { CheckinTheme, DarkTheme } from "../constants/theme";
+import { MyButton } from "../../components/buttons/MyButton";
+import { SuccessAnimation } from "../../components/feedback/SuccessAnimation";
+import { useAppTheme } from "../../hooks/useAppTheme"; // ✅
 
 export default function SuccessScreen() {
   const router = useRouter();
-
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : CheckinTheme;
+  const { theme, isDark } = useAppTheme(); // ✅
 
   const handleClose = () => {
-    router.replace("/");
+    router.dismissAll();
+    router.replace("/(tabs)/profile");
   };
 
   return (
@@ -49,15 +41,8 @@ export default function SuccessScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
+  container: { flex: 1, padding: 24 },
+  content: { flex: 1, justifyContent: "center", alignItems: "center" },
   animContainer: {
     marginBottom: 32,
     height: 150,
@@ -69,7 +54,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 8,
-    fontFamily: "Arial",
   },
   subtitle: {
     fontSize: 16,
@@ -77,7 +61,5 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
     lineHeight: 22,
   },
-  footer: {
-    marginBottom: 20,
-  },
+  footer: { marginBottom: 20 },
 });

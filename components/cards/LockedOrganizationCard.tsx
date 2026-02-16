@@ -1,7 +1,7 @@
 import { Building2, CheckCircle } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, Text, View, useColorScheme } from "react-native";
-import { CheckinTheme, DarkTheme } from "../../constants/theme";
+import { StyleSheet, Text, View } from "react-native";
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 interface LockedOrganizationCardProps {
   organizationName: string;
@@ -12,9 +12,7 @@ export const LockedOrganizationCard = ({
   organizationName,
   label = "Organization",
 }: LockedOrganizationCardProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === "dark" ? DarkTheme : CheckinTheme;
-  const isDark = colorScheme === "dark";
+  const { theme, isDark } = useAppTheme();
 
   return (
     <View style={styles.wrapper}>
@@ -65,7 +63,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 8,
     marginLeft: 4,
-    fontFamily: "Arial",
   },
   container: {
     flexDirection: "row",
@@ -84,7 +81,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
-    fontFamily: "Arial",
   },
   badge: {
     flexDirection: "row",

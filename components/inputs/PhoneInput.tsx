@@ -1,15 +1,8 @@
 import { LucideIcon } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Animated,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from "react-native";
+import { Animated, Platform, StyleSheet, Text, View } from "react-native";
 import MaskInput from "react-native-mask-input";
-import { CheckinTheme as Colors, DarkTheme } from "../../constants/theme";
+import { useAppTheme } from "../../hooks/useAppTheme"; // ✅
 
 interface Props {
   label: string;
@@ -45,9 +38,8 @@ export const PhoneInput = ({
   onChangeText,
   icon: Icon,
 }: Props) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : Colors;
+  // ✅ Используем useAppTheme вместо useColorScheme
+  const { theme, isDark } = useAppTheme();
 
   const [isFocused, setIsFocused] = useState(false);
   const focusAnim = useRef(new Animated.Value(0)).current;
@@ -98,7 +90,7 @@ export const PhoneInput = ({
         {Icon && (
           <View style={styles.iconContainer}>
             <Animated.View style={{ opacity: iconOpacityGray }}>
-              <Icon size={20} color={theme.iconDefault || "#A0A0A0"} />
+              <Icon size={20} color={theme.colors?.iconGray || "#A0A0A0"} />
             </Animated.View>
 
             <Animated.View

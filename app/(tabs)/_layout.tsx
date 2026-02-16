@@ -1,25 +1,14 @@
+import * as Haptics from "expo-haptics";
 import { Tabs, useRouter } from "expo-router";
 import { ScanLine, Settings, User } from "lucide-react-native";
 import React from "react";
-import {
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-  useColorScheme,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CheckinTheme, DarkTheme } from "../../constants/theme";
+import { Platform, StyleSheet, View } from "react-native";
+
+import { useAppTheme } from "../../hooks/useAppTheme";
 
 export default function TabLayout() {
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = isDark ? DarkTheme : CheckinTheme;
-  const insets = useSafeAreaInsets();
-
-  // Отступ от низа
-  const bottomOffset = Math.max(insets.bottom, 10) + 10;
+  const { theme, isDark } = useAppTheme();
 
   return (
     <Tabs
@@ -28,94 +17,94 @@ export default function TabLayout() {
         tabBarShowLabel: true,
         tabBarActiveTintColor: theme.primary,
         tabBarInactiveTintColor: theme.textSecondary,
-
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: "600",
-          marginTop: -2,
-          marginBottom: Platform.OS === "ios" ? 0 : 4,
+          marginBottom: Platform.OS === "ios" ? 5 : 5,
         },
-
+        tabBarItemStyle: {
+          justifyContent: "center",
+          alignItems: "center",
+          paddingVertical: 5,
+        },
         tabBarStyle: {
           position: "absolute",
-          bottom: bottomOffset,
-          left: 20,
-          right: 20,
-          height: 68,
+          bottom: Platform.OS === "ios" ? 30 : 20,
+          left: 50,
+          right: 50,
+          height: 70,
           borderRadius: 35,
-          backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+          backgroundColor: isDark ? "rgba(30,30,30,0.95)" : "#FFFFFF",
           borderTopWidth: 0,
-          elevation: 12,
+          paddingTop: 0,
+          paddingBottom: 0,
           shadowColor: "#000",
-          shadowOffset: { width: 0, height: 8 },
+          shadowOffset: { width: 0, height: 5 },
           shadowOpacity: isDark ? 0.5 : 0.15,
-          shadowRadius: 16,
-          paddingTop: 8,
-          paddingBottom: 6,
-          paddingHorizontal: 10,
-          borderWidth: isDark ? 0 : StyleSheet.hairlineWidth,
-          borderColor: isDark ? "transparent" : "rgba(0,0,0,0.06)",
+          shadowRadius: 10,
+          elevation: 5,
         },
-        tabBarBackground: () => <View style={styles.tabBarBg} />,
+        tabBarBackground: () => (
+          <View style={{ flex: 1, backgroundColor: "transparent" }} />
+        ),
       }}
     >
-      <Tabs.Screen name="index" options={{ href: null }} />
-
-      {/* Profile */}
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, focused }) => (
-            <User
-              size={24}
-              color={color}
-              fill={focused ? color : "none"}
-              strokeWidth={focused ? 2.5 : 2}
-            />
+            <View style={styles.iconContainer}>
+              <User size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            </View>
           ),
+        }}
+        listeners={{
+          tabPress: () =>
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
         }}
       />
 
-      {/* QR / SCAN */}
       <Tabs.Screen
         name="qr"
         options={{
           title: "Scan",
-          tabBarIcon: ({ color }) => (
-            <View style={styles.scanButton}>
-              <ScanLine size={24} color="#FFFFFF" strokeWidth={2.5} />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconContainer}>
+              <ScanLine
+                size={24}
+                color={color}
+                strokeWidth={focused ? 2.5 : 2}
+              />
             </View>
           ),
-          tabBarLabel: () => null,
-          tabBarButton: (props) => {
-            const { ref, style, ...rest } = props;
-
-            return (
-              <Pressable
-                {...rest}
-                style={styles.scanButtonWrapper}
-                android_ripple={{ color: "transparent" }}
-              />
-            );
-          },
         }}
         listeners={{
           tabPress: (e) => {
             e.preventDefault();
-            router.push("/scanner");
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            router.push("/qr-form/scanner");
           },
         }}
       />
 
-      {/* Settings */}
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
           tabBarIcon: ({ color, focused }) => (
-            <Settings size={24} color={color} strokeWidth={focused ? 2.5 : 2} />
+            <View style={styles.iconContainer}>
+              <Settings
+                size={24}
+                color={color}
+                strokeWidth={focused ? 2.5 : 2}
+              />
+            </View>
           ),
+        }}
+        listeners={{
+          tabPress: () =>
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
         }}
       />
     </Tabs>
@@ -123,34 +112,9 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  tabBarBg: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
-  scanButton: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: "#dc2626", // Colors.primary
+  iconContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -20,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#dc2626",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.35,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
-  },
-  scanButtonWrapper: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10,
+    marginBottom: 3,
   },
 });

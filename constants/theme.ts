@@ -1,52 +1,49 @@
 import { Platform } from "react-native";
 
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+const palette = {
+  primary: "#DC2626",
+  white: "#FFFFFF",
+  black: "#000000",
 
-const checkinRed = "#dc2626";
-
-export const Colors = {
-  light: {
-    text: "#11181C",
-    background: "#fff",
-    tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
-    iconDefault: "#D1D5DB",
-  },
-  dark: {
-    text: "#ECEDEE",
-    background: "#151718",
-    tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
-  },
+  iconRed: "#FF3B30",
+  iconGreen: "#34C759",
+  iconBlue: "#007AFF",
+  iconOrange: "#FF9500",
+  iconPurple: "#5856D6",
+  iconSky: "#2AABEE",
+  iconGray: "#8E8E93",
 };
 
 export const CheckinTheme = {
-  primary: checkinRed,
-  background: "#FFFFFF",
-  text: "#333333",
-  textSecondary: "#666666",
-  inputBorder: "#E0E0E0",
+  dark: false,
+  primary: palette.primary,
+  background: "#F2F2F7",
+  card: "#FFFFFF",
+  text: "#000000",
+  textSecondary: "#8E8E93",
+  inputBorder: "#C6C6C8",
+  overlay: "rgba(0,0,0,0.5)",
   white: "#FFFFFF",
-  overlay: "rgba(0,0,0,0.6)",
-  success: "#22C55E",
-  iconDefault: "#D1D5DB",
+
+  colors: {
+    ...palette,
+  },
 };
 
 export const DarkTheme = {
-  primary: checkinRed,
-  background: "#121212",
+  dark: true,
+  primary: palette.primary,
+  background: "#000000",
+  card: "#1C1C1E",
   text: "#FFFFFF",
-  textSecondary: "#A0A0A0",
-  inputBorder: "#333333",
-  white: "#1E1E1E",
+  textSecondary: "#98989D",
+  inputBorder: "#38383A",
   overlay: "rgba(0,0,0,0.8)",
-  success: "#4ADE80",
-  iconDefault: "#555555",
+  white: "#1E1E1E",
+
+  colors: {
+    ...palette,
+  },
 };
 
 export const Fonts = Platform.select({
@@ -61,12 +58,5 @@ export const Fonts = Platform.select({
     serif: "serif",
     rounded: "normal",
     mono: "monospace",
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded:
-      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });

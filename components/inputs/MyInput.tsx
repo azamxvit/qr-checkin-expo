@@ -29,7 +29,6 @@ export const MyInput = ({
   icon: Icon,
   editable = true,
 }: Props) => {
-  // ✅ Используем useAppTheme вместо useColorScheme
   const { theme, isDark } = useAppTheme();
 
   const [isFocused, setIsFocused] = useState(false);

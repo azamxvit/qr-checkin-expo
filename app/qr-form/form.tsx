@@ -112,14 +112,26 @@ export default function FormScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingHorizontal: 24, paddingTop: 16 },
-  content: { padding: 24, flexGrow: 1 },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: 16
+  },
+  content: {
+    padding: 24,
+    flexGrow: 1
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 32,
     marginTop: 10,
   },
-  form: { flex: 1, gap: 16 },
-  footer: { marginTop: 20, marginBottom: 20 },
+  form: {
+    flex: 1,
+    gap: 16
+  },
+  footer: {
+    marginTop: 20,
+    marginBottom: 20    
+  },
 });

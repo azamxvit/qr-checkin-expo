@@ -44,12 +44,12 @@ export const MyButton = ({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={theme.white || "#FFF"} />
+        <ActivityIndicator color="#FFFFFF" />
       ) : (
         <Text
           style={[
             styles.text,
-            variant === "primary" && { color: theme.white || "#FFF" },
+            variant === "primary" && { color: "#FFFFFF" },
             variant === "outline" && { color: theme.primary },
           ]}
         >

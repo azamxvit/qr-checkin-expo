@@ -65,23 +65,16 @@ export default function ScannerScreen() {
 
     try {
       let tokenToCheck = data;
-      console.log("Original scanned data:", data);
-
       try {
         if (data.trim().startsWith("{") || data.trim().startsWith("[")) {
           const parsedData = JSON.parse(data);
-
           if (parsedData.token) {
             tokenToCheck = parsedData.token;
           } else if (parsedData.registration_token) {
             tokenToCheck = parsedData.registration_token;
           }
         }
-      } catch (e) {
-        console.log("Not a JSON object, using raw data");
-      }
-
-      console.log("Extracted Token:", tokenToCheck);
+      } catch (parseError) {}
 
       const validData = await QrService.validateQrToken(tokenToCheck);
 
@@ -93,8 +86,7 @@ export default function ScannerScreen() {
         },
       });
     } catch (error: any) {
-      console.error("Scanner Error:", error);
-      Alert.alert("Ошибка", error.message || "Невалидный QR код", [
+      Alert.alert("Error", error.message || "Invalid QR", [
         {
           text: "OK",
           onPress: () => {

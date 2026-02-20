@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { ScanLine, Settings, User } from "lucide-react-native";
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
@@ -7,6 +7,7 @@ import { Platform, StyleSheet, View } from "react-native";
 import { useAppTheme } from "../../hooks/useAppTheme";
 
 export default function TabLayout() {
+  const router = useRouter();
   const { theme, isDark } = useAppTheme();
 
   return (
@@ -19,7 +20,7 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: "600",
-          marginBottom: 5,
+          marginBottom: Platform.OS === "ios" ? 5 : 5,
         },
         tabBarItemStyle: {
           justifyContent: "center",
@@ -37,20 +38,11 @@ export default function TabLayout() {
           borderTopWidth: 0,
           paddingTop: 0,
           paddingBottom: 0,
-          ...Platform.select({
-            ios: {
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 5 },
-              shadowOpacity: isDark ? 0.5 : 0.15,
-              shadowRadius: 10,
-            },
-            android: { elevation: 5 },
-            web: {
-              boxShadow: isDark
-                ? "0px 5px 10px rgba(0,0,0,0.5)"
-                : "0px 5px 10px rgba(0,0,0,0.15)",
-            },
-          }),
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 5 },
+          shadowOpacity: isDark ? 0.5 : 0.15,
+          shadowRadius: 10,
+          elevation: 5,
         },
         tabBarBackground: () => (
           <View style={{ flex: 1, backgroundColor: "transparent" }} />
@@ -88,8 +80,10 @@ export default function TabLayout() {
           ),
         }}
         listeners={{
-          tabPress: () => {
+          tabPress: (e) => {
+            e.preventDefault();
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            router.push("/qr-form/scanner");
           },
         }}
       />
